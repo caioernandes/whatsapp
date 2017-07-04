@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "911110459419",
+    "firebase_url": "https://whatsapp-e7c9c.firebaseio.com",
+    "project_id": "whatsapp-e7c9c",
+    "storage_bucket": "whatsapp-e7c9c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:911110459419:android:47d2ab0c5213a6f0",
+        "android_client_info": {
+          "package_name": "br.com.whatsapp.caioenascimento.whatsapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "911110459419-4qq6dvupg5vk4lmbej4nbi55n46d788k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKBCgw9LhD7IvXSJ94gF-9yfixQY3Xgg4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "911110459419-4qq6dvupg5vk4lmbej4nbi55n46d788k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
