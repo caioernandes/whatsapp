@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/whatsappclone.iml" filepath="$PROJECT_DIR$/whatsappclone.iml" />
+      <module fileurl="file://$PROJECT_DIR$/whatsapp.iml" filepath="$PROJECT_DIR$/whatsapp.iml" />
     </modules>
   </component>
 </project>
