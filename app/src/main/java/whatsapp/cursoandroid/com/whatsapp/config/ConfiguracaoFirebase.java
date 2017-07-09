@@ -27,4 +27,9 @@ public final class ConfiguracaoFirebase {
 
         return autenticacao;
     }
+
+    public static void efetuarLogout(FirebaseAuth autenticacaoParam) {
+        autenticacaoParam = getFirebaseAutenticacao();
+        autenticacaoParam.signOut();
+    }
 }

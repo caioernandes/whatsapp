@@ -34,6 +34,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        verificarUsuarioLogado();
         init();
 
         mBotaoLogar.setOnClickListener(new View.OnClickListener() {
@@ -45,6 +46,13 @@ public class LoginActivity extends AppCompatActivity {
                 validarLogin();
             }
         });
+    }
+
+    private void verificarUsuarioLogado() {
+        autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
+        if (autenticacao.getCurrentUser() != null) {
+            abrirTelaPrincipal();
+        }
     }
 
     private void init() {
