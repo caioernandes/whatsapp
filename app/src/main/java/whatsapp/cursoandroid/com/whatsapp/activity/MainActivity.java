@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -36,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
     }
 
-    private void efetuarLogout() {
+    private void deslogarUsuario() {
         ConfiguracaoFirebase.efetuarLogout(autenticacao);
         startActivity(new Intent(getApplicationContext(), LoginActivity.class));
     }
@@ -47,5 +49,22 @@ public class MainActivity extends AppCompatActivity {
         menuInflater.inflate(R.menu.menu_main, menu);
 
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.item_sair:
+                deslogarUsuario();
+                return true;
+            case R.id.item_adicionar:
+                Toast.makeText(this, "Adicionar", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.item_pesquisa:
+                Toast.makeText(this, "Pesquisar", Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
