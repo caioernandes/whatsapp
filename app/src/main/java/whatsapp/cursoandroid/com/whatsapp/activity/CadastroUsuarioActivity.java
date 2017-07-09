@@ -12,6 +12,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 
 import whatsapp.cursoandroid.com.whatsapp.R;
@@ -41,12 +44,7 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
                 usuario.setNome(mNome.getText().toString());
                 usuario.setEmail(mEmail.getText().toString());
                 usuario.setSenha(mSenha.getText().toString());
-
-                if (usuario.getSenha().length() < 6) {
-                    Toast.makeText(getApplicationContext(), "A senha deve conter pelo menos 6 caracteres!", Toast.LENGTH_LONG).show();
-                } else {
-                    cadastrarUsuario();
-                }
+                cadastrarUsuario();
             }
         });
     }
@@ -72,8 +70,27 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
                     FirebaseUser usuarioFirebase = task.getResult().getUser();
                     usuario.setId(usuarioFirebase.getUid());
                     usuario.salvar();
+
+                    autenticacao.signOut();
+                    finish();
                 } else {
-                    Toast.makeText(getApplicationContext(), "Erro ao cadastrar usuário!", Toast.LENGTH_LONG).show();
+
+                    String erroExcecao = "";
+
+                    try {
+                        throw task.getException();
+                    } catch (FirebaseAuthWeakPasswordException e) {
+                        erroExcecao = "Digite uma senha mais forte, contento mais caracteres, senhas e números!";
+                    } catch (FirebaseAuthInvalidCredentialsException e) {
+                        erroExcecao = "O e-mail digitado é inválido, digite um novo e-mail!";
+                    } catch (FirebaseAuthUserCollisionException e) {
+                        erroExcecao = "Esse e-mail já está em uso no App!";
+                    } catch (Exception e) {
+                        erroExcecao = "Não foi possível cadastrar o usuário!";
+                        e.printStackTrace();
+                    }
+
+                    Toast.makeText(getApplicationContext(), "Erro: " + erroExcecao, Toast.LENGTH_LONG).show();
                 }
             }
         });
