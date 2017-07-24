@@ -3,8 +3,6 @@ package whatsapp.cursoandroid.com.whatsapp.helper;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import java.util.HashMap;
-
 
 public class Preferencias {
 
@@ -14,9 +12,7 @@ public class Preferencias {
     private final int MODE = Context.MODE_PRIVATE;
     private SharedPreferences.Editor editor;
 
-    private final String CHAVE_NOME = "nome";
-    private final String CHAVE_TELFONE = "telefone";
-    private final String CHAVE_TOKEN = "token";
+    private final String CHAVE_IDENTIFICADOR = "identificadorUsuarioLogado";
 
     public Preferencias(Context contextParametro) {
         contexto = contextParametro;
@@ -24,19 +20,12 @@ public class Preferencias {
         editor = preferences.edit();
     }
 
-    public void salvarUsuarioPreferencias(String nomeUsuario, String telefoneUsuario, String token) {
-        editor.putString(CHAVE_NOME, nomeUsuario);
-        editor.putString(CHAVE_TELFONE, telefoneUsuario);
-        editor.putString(CHAVE_TOKEN, token);
+    public void salvarDados(String identificadorUsuario) {
+        editor.putString(CHAVE_IDENTIFICADOR, identificadorUsuario);
         editor.commit();
     }
 
-    public HashMap<String, String> getDadosUsuario() {
-        HashMap<String, String> dadosUsuario = new HashMap<>();
-        dadosUsuario.put(CHAVE_NOME, preferences.getString(CHAVE_NOME, null));
-        dadosUsuario.put(CHAVE_TELFONE, preferences.getString(CHAVE_TELFONE, null));
-        dadosUsuario.put(CHAVE_TOKEN, preferences.getString(CHAVE_TOKEN, null));
-
-        return dadosUsuario;
+    public String getIdentificador() {
+        return preferences.getString(CHAVE_IDENTIFICADOR, null);
     }
 }

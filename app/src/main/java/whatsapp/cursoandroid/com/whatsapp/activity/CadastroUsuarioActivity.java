@@ -1,5 +1,6 @@
 package whatsapp.cursoandroid.com.whatsapp.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -15,10 +16,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
-import com.google.firebase.auth.FirebaseUser;
 
 import whatsapp.cursoandroid.com.whatsapp.R;
 import whatsapp.cursoandroid.com.whatsapp.config.ConfiguracaoFirebase;
+import whatsapp.cursoandroid.com.whatsapp.helper.Base64Custom;
+import whatsapp.cursoandroid.com.whatsapp.helper.Preferencias;
 import whatsapp.cursoandroid.com.whatsapp.model.Usuario;
 
 public class CadastroUsuarioActivity extends AppCompatActivity {
@@ -67,12 +69,14 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     Toast.makeText(getApplicationContext(), "Usuário cadastrado com sucesso!", Toast.LENGTH_LONG).show();
 
-                    FirebaseUser usuarioFirebase = task.getResult().getUser();
-                    usuario.setId(usuarioFirebase.getUid());
+                    String identificadorUsuario = Base64Custom.codificarBase64(usuario.getEmail());
+                    usuario.setId(identificadorUsuario);
                     usuario.salvar();
 
-                    autenticacao.signOut();
-                    finish();
+                    Preferencias preferencias = new Preferencias(getApplicationContext());
+                    preferencias.salvarDados(identificadorUsuario);
+
+                    abrirLoginUsuario();
                 } else {
 
                     String erroExcecao = "";
@@ -94,5 +98,10 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void abrirLoginUsuario() {
+        startActivity(new Intent(this, LoginActivity.class));
+        finish();
     }
 }

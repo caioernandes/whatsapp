@@ -19,6 +19,8 @@ import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 
 import whatsapp.cursoandroid.com.whatsapp.R;
 import whatsapp.cursoandroid.com.whatsapp.config.ConfiguracaoFirebase;
+import whatsapp.cursoandroid.com.whatsapp.helper.Base64Custom;
+import whatsapp.cursoandroid.com.whatsapp.helper.Preferencias;
 import whatsapp.cursoandroid.com.whatsapp.model.Usuario;
 
 public class LoginActivity extends AppCompatActivity {
@@ -70,6 +72,11 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
+
+                    Preferencias preferencias = new Preferencias(getApplicationContext());
+                    String identificadorUsuarioLogado = Base64Custom.codificarBase64(usuario.getEmail());
+                    preferencias.salvarDados(identificadorUsuarioLogado);
+
                     abrirTelaPrincipal();
                     Toast.makeText(getApplicationContext(), "Sucesso ao realizar login!", Toast.LENGTH_LONG).show();
                 } else {
