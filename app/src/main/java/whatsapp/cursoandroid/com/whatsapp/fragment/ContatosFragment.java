@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -96,7 +97,18 @@ public class ContatosFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), ConversaActivity.class);
-                startActivity(intent);
+
+                //recuperar dados a serem passados
+                Contato contato = contatos.get(position);
+
+                if (contato != null) {
+                    //enviar dados para conversa activity
+                    intent.putExtra("nome", contato.getNome());
+                    intent.putExtra("email", contato.getEmail());
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(getActivity(), "Erro ao obter dados do contato.", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
