@@ -4,13 +4,21 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 
 import whatsapp.cursoandroid.com.whatsapp.R;
+import whatsapp.cursoandroid.com.whatsapp.adapter.MensagemAdapter;
 import whatsapp.cursoandroid.com.whatsapp.config.ConfiguracaoFirebase;
 import whatsapp.cursoandroid.com.whatsapp.helper.Base64Custom;
 import whatsapp.cursoandroid.com.whatsapp.helper.Preferencias;
@@ -22,6 +30,10 @@ public class ConversaActivity extends AppCompatActivity {
     private EditText editMensagem;
     private ImageButton btMensagem;
     private DatabaseReference firebase;
+    private ListView listView;
+    private ArrayList<Mensagem> mensagens;
+    private ArrayAdapter<Mensagem> adapter;
+    private ValueEventListener valueEventListenerMensagem;
 
     //dados de destinatário
     private String nomeUsuarioDestinatario;
@@ -52,6 +64,42 @@ public class ConversaActivity extends AppCompatActivity {
         toolbar.setNavigationIcon(R.drawable.ic_action_arrow_left);
         setSupportActionBar(toolbar);
 
+        //monta listview e adapter
+        mensagens = new ArrayList<>();
+        adapter = new MensagemAdapter(this, mensagens);
+        listView.setAdapter(adapter);
+
+        //recuperar mensagens do firebase
+        firebase = ConfiguracaoFirebase.getFirebase()
+                    .child("mensagens")
+                    .child(idUsuarioRemetente)
+                    .child(idUsuarioDestinatario);
+
+        //cria listener para mensagens
+        valueEventListenerMensagem = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                //limpar mensagens
+                mensagens.clear();
+
+                //recupera mensagens
+                for (DataSnapshot dados : dataSnapshot.getChildren()) {
+                    Mensagem mensagem = dados.getValue(Mensagem.class);
+                    mensagens.add(mensagem);
+                }
+
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        firebase.addValueEventListener(valueEventListenerMensagem);
+
         btMensagem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,7 +111,12 @@ public class ConversaActivity extends AppCompatActivity {
                     mensagem.setIdUsuario(idUsuarioRemetente);
                     mensagem.setMensagem(textoMensagem);
 
+                    //salvamos mensagem do remetente
                     salvarMensagem(idUsuarioRemetente, idUsuarioDestinatario, mensagem);
+
+                    //salvamos mensagem do destinatario
+                    salvarMensagem(idUsuarioDestinatario, idUsuarioRemetente, mensagem);
+
                     editMensagem.setText("");
                 }
             }
@@ -85,9 +138,16 @@ public class ConversaActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        firebase.removeEventListener(valueEventListenerMensagem);
+    }
+
     public void init() {
         toolbar = (Toolbar) findViewById(R.id.tb_conversa);
         editMensagem = (EditText) findViewById(R.id.edit_conversa);
         btMensagem = (ImageButton) findViewById(R.id.bt_enviar);
+        listView = (ListView) findViewById(R.id.lv_conversas);
     }
 }
