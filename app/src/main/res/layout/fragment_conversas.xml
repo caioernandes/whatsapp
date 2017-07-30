@@ -4,12 +4,12 @@
     android:layout_height="match_parent"
     tools:context="whatsapp.cursoandroid.com.whatsapp.fragment.ConversasFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+<ListView
+    android:id="@+id/lv_conversas"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:divider="@color/cinza"
+    android:dividerHeight="1dp"
+    android:layout_gravity="center_horizontal|top"/>
 
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Conversas" />
 </FrameLayout>

@@ -1,9 +1,12 @@
 package whatsapp.cursoandroid.com.whatsapp.activity;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -22,6 +25,7 @@ import whatsapp.cursoandroid.com.whatsapp.adapter.MensagemAdapter;
 import whatsapp.cursoandroid.com.whatsapp.config.ConfiguracaoFirebase;
 import whatsapp.cursoandroid.com.whatsapp.helper.Base64Custom;
 import whatsapp.cursoandroid.com.whatsapp.helper.Preferencias;
+import whatsapp.cursoandroid.com.whatsapp.model.Conversa;
 import whatsapp.cursoandroid.com.whatsapp.model.Mensagem;
 
 public class ConversaActivity extends AppCompatActivity {
@@ -41,7 +45,7 @@ public class ConversaActivity extends AppCompatActivity {
 
     //dados do remetente
     private String idUsuarioRemetente;
-
+    private String nomeUsuarioRemetente;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +55,7 @@ public class ConversaActivity extends AppCompatActivity {
 
         Preferencias preferencias = new Preferencias(this);
         idUsuarioRemetente = preferencias.getIdentificador();
+        nomeUsuarioRemetente = preferencias.getNomeUsuario();
 
         Bundle extra = getIntent().getExtras();
 
@@ -112,13 +117,57 @@ public class ConversaActivity extends AppCompatActivity {
                     mensagem.setMensagem(textoMensagem);
 
                     //salvamos mensagem do remetente
-                    salvarMensagem(idUsuarioRemetente, idUsuarioDestinatario, mensagem);
+                    Boolean retornoMensagemRemetente = salvarMensagem(idUsuarioRemetente, idUsuarioDestinatario, mensagem);
+                    if (!retornoMensagemRemetente) {
+                        Toast.makeText(getApplicationContext(),
+                                "Problema ao salvar mensagem, tente novamente!.",
+                                Toast.LENGTH_LONG).show();
+                    } else {
+                        //salvamos mensagem do destinatario
+                        Boolean retornoMensagemDestinatario = salvarMensagem(idUsuarioDestinatario, idUsuarioRemetente, mensagem);
 
-                    //salvamos mensagem do destinatario
-                    salvarMensagem(idUsuarioDestinatario, idUsuarioRemetente, mensagem);
+                        if (!retornoMensagemDestinatario) {
+                            Toast.makeText(getApplicationContext(),
+                                    "Problema ao salvar mensagem para o destinatário, tente novamente!.",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    //salvar conversa para o destinatario
+                    Conversa conversa = new Conversa();
+                    conversa.setIdUsuario(idUsuarioDestinatario);
+                    conversa.setNome(nomeUsuarioDestinatario);
+                    conversa.setMensagem(textoMensagem);
+                    Boolean retornoConversaRemetente = salvarConversa(idUsuarioRemetente, idUsuarioDestinatario, conversa);
+                    if (!retornoConversaRemetente) {
+                        Toast.makeText(getApplicationContext(),
+                                "Problema ao salvar conversa, tente novamente!.",
+                                Toast.LENGTH_LONG).show();
+                    } else {
+                        conversa = new Conversa();
+                        conversa.setIdUsuario(idUsuarioRemetente);
+                        //conversa.setNome();
+                        conversa.setMensagem(textoMensagem);
+                        salvarConversa(idUsuarioDestinatario, idUsuarioRemetente, conversa);
+                    }
 
                     editMensagem.setText("");
                 }
+            }
+        });
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+
+                /*Mensagem mensagem = mensagens.get(position);
+
+                firebase = ConfiguracaoFirebase.getFirebase().child("mensagens");
+                firebase.child(idUsuarioRemetente)
+                        .child(idUsuarioDestinatario)
+                        .removeValue();*/
+
+                return true;
             }
         });
     }
@@ -136,6 +185,47 @@ public class ConversaActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Erro: " + e.getMessage(), Toast.LENGTH_LONG).show();
             return false;
         }
+    }
+
+    private boolean salvarConversa(String idRemetente, String idDestinatario, Conversa conversa) {
+        try {
+            firebase = ConfiguracaoFirebase.getFirebase().child("conversas");
+            firebase.child(idRemetente)
+                    .child(idDestinatario)
+                    .setValue(conversa);
+
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private void excluirItemMensagem() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+
+        //configurações do dialog
+        alertDialog.setTitle("Excluir mensagem");
+        alertDialog.setMessage("Deseja mesmo excluir esta mensagem?");
+        alertDialog.setCancelable(false);
+
+        //configuração dos botões
+        alertDialog.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        alertDialog.setNegativeButton("Não", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        alertDialog.create();
+        alertDialog.show();
     }
 
     @Override
